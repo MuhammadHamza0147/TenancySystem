@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\app\UserController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TenantController;
+use App\Http\Controllers\app\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +30,15 @@ Route::middleware([
     });
 
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('app.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
     
     Route::middleware('auth')->group(function () {
         // User CRUD Routes
-        Route::resource('user' , TenantController::class);
+        Route::group(['middleware' => ['role:admin']], function () {
+            Route::resource('user' , UserController::class);
+        });
+        
         // Default Profile Routes
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
