@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Stancl\Tenancy\Database\Models\Domain;
 
 class TenantController extends Controller
 {
@@ -57,11 +58,27 @@ class TenantController extends Controller
 
     public function update(Request $request, string $id)
     {
-        //
+        $validateData = $request->validate([
+            'name' =>'required|string|max:255',
+            'email' =>'required|email|max:255',
+            'code' =>'required|string|max:25|unique:domains,tenant_id,'. $id,
+        ]);
+        $tenantUpdate = Tenant::findOrFail($id);
+        $DomainUpdate = Domain::where('tenant_id',$id)->update([
+            'tenant_id' => $request->code,
+        ]);
+        $tenantUpdate->update([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        return redirect()->route('tenant.index');
     }
 
     public function destroy(string $id)
     {
-        //
+        $tenantDelete = Tenant::findOrFail($id);
+        $tenantDelete->delete();
+        return redirect()->route('tenant.index');
     }
 }

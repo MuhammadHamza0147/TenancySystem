@@ -29,7 +29,7 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Domain</th>
-                                    <th scope="col">Action</th>
+                                    <th scope="col" colspan="2">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -43,7 +43,15 @@
                                     @endforeach
                                     <td>
                                         <x-link-btn class="bg-secondary" href="{{route('tenant.edit', $tenant->id)}}">Edit</x-link-btn>
-                                        <x-link-btn class="bg-secondary" href="{{route('tenant.destroy', $tenant->id)}}">Delete</x-link-btn>
+                                    </td>
+                                    <td>
+                                        <form action="{{route('tenant.destroy' , $tenant->id)}}" method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                            <input type="hidden" name="id" value="{{$tenant->id}}">
+                                            <button type="submit" class="btn text-white bg-secondary">Delete</button>
+                                        </form>
+                                        {{-- <x-link-btn class="bg-secondary" href="{{route('tenant.destroy', $tenant->id)}}">Delete</x-link-btn> --}}
                                     </td>
                                 </tr>
                                 @endforeach
