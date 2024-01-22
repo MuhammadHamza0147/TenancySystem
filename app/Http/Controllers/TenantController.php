@@ -42,7 +42,7 @@ class TenantController extends Controller
             ]);
         }
 
-        return redirect()->route('tenant.index');
+        return redirect()->route('tenant.index')->with('success', 'Tenant Created Successfully');
     }
 
     public function show(string $id)
@@ -63,22 +63,26 @@ class TenantController extends Controller
             'email' =>'required|email|max:255',
             'code' =>'required|string|max:25|unique:domains,tenant_id,'. $id,
         ]);
-        $tenantUpdate = Tenant::findOrFail($id);
+
+        //Update Domain Data
         $DomainUpdate = Domain::where('tenant_id',$id)->update([
             'tenant_id' => $request->code,
         ]);
+
+        // Update Tenant Data
+        $tenantUpdate = Tenant::findOrFail($id);
         $tenantUpdate->update([
             'name' => $request->name,
             'email' => $request->email,
         ]);
 
-        return redirect()->route('tenant.index');
+        return redirect()->route('tenant.index')->with('success', 'Tenant Updated Successfully');
     }
 
     public function destroy(string $id)
     {
         $tenantDelete = Tenant::findOrFail($id);
         $tenantDelete->delete();
-        return redirect()->route('tenant.index');
+        return redirect()->route('tenant.index')->with('success', 'Tenant Deleted Successfully');
     }
 }
